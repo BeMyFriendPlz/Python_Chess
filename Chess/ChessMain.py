@@ -22,6 +22,9 @@ def main():
     clock = p.time.Clock() #Đồng hồ đếm thời gian chuyển động
     screen.fill(p.Color("white"))
     gs = ChessEngine.GameState()
+    validMoves = gs.getValidMoves()
+    moveMade = False #Kiểm tra xem đã di chuyển quân cờ
+
     loadImages()
     running = True
     sqSelected = () #Không có ô vuông nào được chọn, theo dõi ô vuông được nhấn (row, col)
@@ -30,6 +33,7 @@ def main():
         for e in p.event.get():
             if e.type == p.QUIT:
                 running = False
+            #Xử lý chuột
             elif e.type == p.MOUSEBUTTONDOWN:
                 location = p.mouse.get_pos() #(x,y) vị trí chuột
                 col = location[0] // SQ_SIZE
@@ -40,12 +44,23 @@ def main():
                 else:
                     sqSelected = (row, col)
                     playerClicks.append(sqSelected) #Ghi lại 2 lần nhấn để di chuyển quân
-            if len(playerClicks) == 2: #Sau khi nhấn lần 2
-                move = ChessEngine.Move(playerClicks[0], playerClicks[1], gs.board)
-                print(move.getChessNotation())
-                gs.makeMoved(move)
-                sqSelected = () #Reset
-                playerClicks = [] #Reset
+                if len(playerClicks) == 2: #Sau khi nhấn lần 2
+                    move = ChessEngine.Move(playerClicks[0], playerClicks[1], gs.board)
+                    print(move.getChessNotation())
+                    if move in validMoves:
+                        gs.makeMoved(move)
+                        moveMade = True
+                    sqSelected = () #Reset
+                    playerClicks = [] #Reset
+            #Xử lý phím
+            elif e.type == p.KEYDOWN:
+                if e.key == p.K_z:
+                    gs.undoMoved()
+                    moveMade = True
+        
+        if moveMade:
+            validMoves = gs.getValidMoves()
+            moveMade = False
 
         drawGameState(screen, gs)
         p.display.flip()
@@ -59,17 +74,17 @@ def drawGameState(screen, gs):
 
 def drawBoard(screen):
     colors = [p.Color("white"), p.Color("gray")]
-    for i in range (DIMENSION):
-        for j in range (DIMENSION):
-            color = colors[(i + j) % 2] #Màu ô vuông: chẵn là trắng, lẻ là đen
-            p.draw.rect(screen, color, (j*SQ_SIZE, i*SQ_SIZE, SQ_SIZE, SQ_SIZE)) #Vẽ hình lên screen
+    for r in range (DIMENSION):
+        for c in range (DIMENSION):
+            color = colors[(r + c) % 2] #Màu ô vuông: chẵn là trắng, lẻ là đen
+            p.draw.rect(screen, color, (c*SQ_SIZE, r*SQ_SIZE, SQ_SIZE, SQ_SIZE)) #Vẽ hình lên screen
 
 def drawPieces(screen, board):
-    for i in range (DIMENSION):
-        for j in range (DIMENSION):
-            piece = board[i][j]
+    for r in range (DIMENSION):
+        for c in range (DIMENSION):
+            piece = board[r][c]
             if piece != '--':
-                screen.blit(IMAGES[piece], (j*SQ_SIZE, i*SQ_SIZE, SQ_SIZE, SQ_SIZE)) #Vẽ hình có sẵn lên screen
+                screen.blit(IMAGES[piece], (c*SQ_SIZE, r*SQ_SIZE, SQ_SIZE, SQ_SIZE)) #Vẽ hình có sẵn lên screen
 
 if __name__ == "__main__":
     main()
