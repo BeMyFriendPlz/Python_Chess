@@ -50,8 +50,10 @@ def main():
                     if move in validMoves:
                         gs.makeMoved(move)
                         moveMade = True
-                    sqSelected = () #Reset
-                    playerClicks = [] #Reset
+                        sqSelected = () #Reset
+                        playerClicks = [] #Reset
+                    else:
+                        playerClicks = [sqSelected]
             #Xử lý phím
             elif e.type == p.KEYDOWN:
                 if e.key == p.K_z:
