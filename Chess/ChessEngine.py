@@ -19,8 +19,8 @@ class GameState():
         self.moveLog = [] #Nhật ký bàn cờ ghi lại các nước cờ di chuyển
         self.whiteKingLocation = (7, 4)
         self.blackKingLocation = (0, 4)
-        self.checkMate = False
-        self.staleMate = False
+        self.checkmate = False
+        self.stalemate = False
         self.enpassantPossible = () #Tọa độ ô vuông khi "en passant" là hợp lệ
         self.currentCastlingRight = CastleRights(True, True, True, True)
         self.castleRightsLog = [CastleRights(self.currentCastlingRight.wks, self.currentCastlingRight.bks,
@@ -159,9 +159,9 @@ class GameState():
             self.undoMoved()
         if len(moves) == 0:
             if self.inCheck():
-                self.checkMate = True
+                self.checkmate = True
             else:
-                self.staleMate = True
+                self.stalemate = True
 
         self.enpassantPossible = tempEnpassantPossible
         self.currentCastlingRight = tempCastleRights
