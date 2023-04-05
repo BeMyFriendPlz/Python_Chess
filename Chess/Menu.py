@@ -14,6 +14,9 @@ class Button:
         self.rect.topleft = (self.pos[0] - self.button.get_width() / 2, 
                              self.pos[1] - self.button.get_height() / 2)
         self.clicked = False
+        self.cl_sound = p.mixer.Sound("Chess/Audio/click_sound.mp3")
+        self.cl_sound.set_volume(0.25)
+        self.audio_check = "ON"
 
     def draw(self, Screen):
         font = p.font.SysFont("freesansbold.ttf", 30)
@@ -24,10 +27,15 @@ class Button:
                                 self.button.get_height() / 2 - text.get_height() / 2))
         Screen.blit(self.button, (self.pos[0] - self.button.get_width() / 2, 
                                       self.pos[1] - self.button.get_height() / 2))
+        f = open("Chess/audio_sound.txt", "r")
+        self.audio_check = f.read().split()
+        f.close()
     
     def check_clicked(self):
         if self.rect.collidepoint(p.mouse.get_pos()):
             if p.mouse.get_pressed()[0] == 1 and self.clicked == False:
+                if self.audio_check[2] == "ON" and self.audio_check[0] == "ON":
+                    self.cl_sound.play()
                 self.clicked = True
         if p.mouse.get_pressed()[0] == 0:
             self.clicked = False
@@ -87,6 +95,26 @@ def drawMultiPlayer():
     MultiPlayer_button.clicked = False
     return 0 
 
+def drawOptions():
+    font_txt = p.font.SysFont("arial", 40, True, False)
+    display_text(Screen, "Total Sound:", (SCREEN_WIDTH / 2 - 356 + 100, SCREEN_HEIGHT / 7 - 23 + 80), font_txt, 'white')
+    display_text(Screen, "Music Sound:", (SCREEN_WIDTH / 2 - 356 + 100, SCREEN_HEIGHT / 7 - 23 + 180), font_txt, 'white')
+    display_text(Screen, "Menu Sound:", (SCREEN_WIDTH / 2 - 356 + 100, SCREEN_HEIGHT / 7 - 23 + 280), font_txt, 'white')
+    display_text(Screen, "Game Sound:", (SCREEN_WIDTH / 2 - 356 + 100, SCREEN_HEIGHT / 7 - 23 + 380), font_txt, 'white')
+
+    Total_Sound_button.draw(Screen)
+    Music_Sound_button.draw(Screen)
+    Menu_Sound_button.draw(Screen)
+    Game_Sound_button.draw(Screen)
+
+    Back_button = Button("BACK", (95, 65), 100, 40)
+    Back_button.draw(Screen)
+    if Back_button.check_clicked():
+        Options_button.clicked = False
+        return 0
+    else:
+        return 3
+
 def drawAbout():
     font_title = p.font.SysFont("Inkfree", 60, True, False)
     text = font_title.render("Bai Tap Lon Python - D20ATTT", 0, p.Color('white'))
@@ -122,6 +150,21 @@ if __name__ == "__main__":
     About_button = Button("ABOUT", (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2.5 + 65 * 3), 260, 40)
     Exit_button = Button("EXIT", (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2.5 + 65 * 4), 260, 40)
 
+    f = open("Chess/audio_sound.txt", "r")
+    Total_sound, Music_sound, Menu_sound, Game_sound = f.read().split()
+    f.close()
+
+    Total_Sound_button = Button(Total_sound, (SCREEN_WIDTH / 2 - 356 + 550, SCREEN_HEIGHT / 7 - 23 + 103), 100, 40)
+    Music_Sound_button = Button(Total_sound if Total_sound == "OFF" else Music_sound, (SCREEN_WIDTH / 2 - 356 + 550, SCREEN_HEIGHT / 7 - 23 + 203), 100, 40)
+    Menu_Sound_button = Button(Total_sound if Total_sound == "OFF" else Menu_sound, (SCREEN_WIDTH / 2 - 356 + 550, SCREEN_HEIGHT / 7 - 23 + 303), 100, 40)
+    Game_Sound_button = Button(Total_sound if Total_sound == "OFF" else Game_sound, (SCREEN_WIDTH / 2 - 356 + 550, SCREEN_HEIGHT / 7 - 23 + 403), 100, 40)
+
+    #Thêm music background
+    bg_music = p.mixer.Sound("Chess/Audio/background_music.mp3")
+    if Music_sound == "ON" and Total_sound == "ON":
+        bg_music.play(loops=-1)
+        bg_music.set_volume(0.5)
+
     run = True
     while run:
         Screen.fill(p.Color("black"))
@@ -133,8 +176,7 @@ if __name__ == "__main__":
             elif menu_command == 2:
                 menu_command = drawMultiPlayer()
             elif menu_command == 3:
-                Options_button.clicked = False
-                pass
+                menu_command = drawOptions()
             elif menu_command == 4:
                 menu_command = drawAbout()
             elif menu_command == 5:
@@ -143,7 +185,39 @@ if __name__ == "__main__":
         for e in p.event.get():
             if e.type == p.QUIT:
                 run = False
+            elif e.type == p.MOUSEBUTTONDOWN:
+                if Total_Sound_button.check_clicked():
+                    Total_sound = "OFF" if Total_sound == "ON" else "ON"
+                    Total_Sound_button.text = Total_sound
+                    Music_Sound_button.text = Total_sound if Total_sound == "OFF" else Music_sound
+                    if Music_sound == "ON" and Total_sound == "ON":
+                        bg_music.play(loops=-1)
+                    else:
+                        bg_music.stop()
+                    Menu_Sound_button.text = Total_sound if Total_sound == "OFF" else Menu_sound
+                    Game_Sound_button.text = Total_sound if Total_sound == "OFF" else Game_sound
+                    Total_Sound_button.clicked = False
+                elif Music_Sound_button.check_clicked():
+                    Music_sound = "OFF" if Music_sound == "ON" else "ON"
+                    Music_Sound_button.text = Music_sound
+                    if Music_sound == "ON" and Total_sound == "ON":
+                        bg_music.play(loops=-1)
+                    else:
+                        bg_music.stop()
+                    Music_Sound_button.clicked = False
+                elif Menu_Sound_button.check_clicked():
+                    Menu_sound = "OFF" if Menu_sound == "ON" else "ON"
+                    Menu_Sound_button.text = Menu_sound
+                    Menu_Sound_button.clicked = False
+                elif Game_Sound_button.check_clicked():
+                    Game_sound = "OFF" if Game_sound == "ON" else "ON"
+                    Game_Sound_button.text = Game_sound
+                    Game_Sound_button.clicked = False
+                f = open("Chess/audio_sound.txt", "w")
+                f.write("{} {} {} {}".format(Total_sound, Music_sound, Menu_sound, Game_sound))
+                f.close()
         
         p.display.flip()
+
     p.quit()
     sys.exit()

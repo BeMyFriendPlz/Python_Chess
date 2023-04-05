@@ -32,7 +32,6 @@ class Piece_Button:
     
     def check_clicked(self):
         if self.rect.collidepoint(p.mouse.get_pos()):
-            print("YES")
             if p.mouse.get_pressed()[0] == 1 and self.clicked == False:
                 self.clicked = True
         if p.mouse.get_pressed()[0] == 0:
@@ -113,6 +112,10 @@ class ChessMain:
         moveMade = False  # Kiểm tra xem đã di chuyển quân cờ
         animate = False  # Kiểm tra khi nào thì animate 1 nước đi
 
+        f = open("Chess/audio_sound.txt", "r")
+        self.audio_check = f.read().split()
+        f.close()
+
         self.loadImages()
         sqSelected = ()  # Không có ô vuông nào được chọn, theo dõi ô vuông được nhấn (row, col)
         playerClicks = []  # Theo dõi thao tác click chuột của người chơi
@@ -132,12 +135,25 @@ class ChessMain:
         NewGame_button = Button("NEW", (450, 50), 100, 40)
         Undo_button = Button("UNDO", (700, 50), 100, 40)
 
+        #Thêm game sound
+        move_sound = p.mixer.Sound("Chess/Audio/move_sound.mp3")
+        # move_sound.set_volume(0.25)
+        capture_sound = p.mixer.Sound("Chess/Audio/capture_sound.mp3")
+        # capture_sound.set_volume(0.25)
+        check_sound = p.mixer.Sound("Chess/Audio/check_sound.mp3")
+        # check_sound.set_volume(0.25)
+        checkmate_sound = p.mixer.Sound("Chess/Audio/checkmate_sound.mp3")
+        # checkmate_sound.set_volume(0.25)
+        stalemate_sound = p.mixer.Sound("Chess/Audio/stalemate_sound.mp3")
+        # stalemate_sound.set_volume(0.25)
+
         while True:
             Back_button.draw(Screen)
             NewGame_button.draw(Screen)
             Undo_button.draw(Screen)
             if Back_button.check_clicked():
                 break
+
             humanTurn = (gs.whiteToMove and playerOne) or (not gs.whiteToMove and playerTwo)
             for e in p.event.get():
                 if e.type == p.QUIT:
@@ -167,7 +183,7 @@ class ChessMain:
                         if AIThingking:
                             moveFinderProcess.terminate()
                             AIThingking = False
-                        moveUndone = True
+                        moveUndone = False
                         NewGame_button.clicked = False
 
                     if not gameOver and humanTurn:
@@ -211,18 +227,18 @@ class ChessMain:
                             AIThingking = False
                         moveUndone = True
 
-                    # if e.key == p.K_r:
-                    #     gs = ChessEngine.GameState()
-                    #     validMoves = gs.getValidMoves()
-                    #     sqSelected = ()
-                    #     playerClicks = []
-                    #     moveMade = False
-                    #     animate = False
-                    #     gameOver = False
-                    #     if AIThingking:
-                    #         moveFinderProcess.terminate()
-                    #         AIThingking = False
-                    #     moveUndone = True
+                    if e.key == p.K_r:
+                        gs = ChessEngine.GameState()
+                        validMoves = gs.getValidMoves()
+                        sqSelected = ()
+                        playerClicks = []
+                        moveMade = False
+                        animate = False
+                        gameOver = False
+                        if AIThingking:
+                            moveFinderProcess.terminate()
+                            AIThingking = False
+                        moveUndone = False
 
             #Chuyển động của AI
             if not gameOver and not humanTurn and not moveUndone:
@@ -246,6 +262,19 @@ class ChessMain:
                 if animate:
                     self.animateMove(gs.moveLog[-1], Screen, gs.board, clock)
                 validMoves = gs.getValidMoves()
+
+                if not moveUndone and self.audio_check[3] == "ON" and self.audio_check[0] == "ON":
+                    if gs.checkmate:
+                        checkmate_sound.play()
+                    elif gs.stalemate:
+                        stalemate_sound.play()
+                    elif gs.inCheck():
+                        check_sound.play()
+                    elif (not humanTurn and AIMove.pieceCaptured != "--") or (humanTurn and move.pieceCaptured != "--"):
+                        capture_sound.play()
+                    else:
+                        move_sound.play()
+
                 moveMade = False
                 animate = False
                 moveUndone = False
@@ -287,6 +316,13 @@ class ChessMain:
                 for move in validMoves:
                     if move.startRow == r and move.startCol == c:
                         screen.blit(s, (move.endCol * SQ_SIZE, move.endRow * SQ_SIZE))
+        #Highlight vua nếu bị chiếu
+        if gs.inCheck():
+            r, c = gs.whiteKingLocation if gs.whiteToMove else gs.blackKingLocation
+            s = p.Surface((SQ_SIZE, SQ_SIZE))
+            s.set_alpha(100)  # Làm mờ màu đi từ 0 -> 255
+            s.fill(p.Color('red'))
+            screen.blit(s, (c * SQ_SIZE, r * SQ_SIZE))
 
 
     def drawPieces(self, screen, board):
