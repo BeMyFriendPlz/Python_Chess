@@ -193,7 +193,7 @@ def findMoveNegaMaxAlphaBeta(gs, validMoves, depth, alpha, beta, turnMultiplier)
                 nextMove = move
                 print(move,score)
         gs.undoMoved()
-        if maxScore > alpha:#nơi quá trình cắt tỉa xảy ra
+        if maxScore > alpha: #nơi quá trình cắt tỉa xảy ra
             alpha = maxScore
         if alpha >= beta:
             break
@@ -201,7 +201,7 @@ def findMoveNegaMaxAlphaBeta(gs, validMoves, depth, alpha, beta, turnMultiplier)
     return maxScore
 
 '''
-Một điểm số tích cực thì tốt cho quân trắng, quân trắng thắng, điểm trừ thì tót cho quân đen
+Một điểm số tích cực thì tốt cho quân trắng, quân trắng thắng, điểm trừ thì tốt cho quân đen
 '''
 def scoreBoard(gs):
     if gs.checkmate:
