@@ -15,7 +15,7 @@ class Button:
                              self.pos[1] - self.button.get_height() / 2)
         self.clicked = False
         self.cl_sound = p.mixer.Sound("Chess/Audio/click_sound.mp3")
-        self.cl_sound.set_volume(0.25)
+        # self.cl_sound.set_volume(0.25)
         self.audio_check = "ON"
 
     def draw(self, Screen):
@@ -163,7 +163,7 @@ if __name__ == "__main__":
     bg_music = p.mixer.Sound("Chess/Audio/background_music.mp3")
     if Music_sound == "ON" and Total_sound == "ON":
         bg_music.play(loops=-1)
-        bg_music.set_volume(0.5)
+        bg_music.set_volume(0.2)
 
     run = True
     while run:

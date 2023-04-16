@@ -20,7 +20,7 @@ class GameState():
         self.blackKingLocation = (0, 4)
         self.checkmate = False
         self.stalemate = False
-        self.pins=[]
+        # self.pins=[]
         self.enpassantPossible = ()  # Tọa độ ô vuông khi "en passant" là hợp lệ
         self.enpassantPossibleLog = [self.enpassantPossible]
         self.currentCastlingRight = CastleRights(True, True, True, True)
@@ -198,64 +198,64 @@ class GameState():
                     self.moveFunctions[piece](r, c, moves)
         return moves
 
+    # def getPawnMoves(self, r, c, moves):
+    #     piecePinned = False
+    #     pinDirection = ()
+    #     for i in range(len(self.pins)-1,-1,-1):
+    #         if self.pins[i][0] == r and self.pins[i][1]==c:
+    #             piecePinned = True
+    #             pinDirection = (self.pins[i][2], self.pins[i][3])
+    #             self.pins.remove(self.pins[i])
+    #             break
+
+    #     if self.whiteToMove:
+    #         moveAmount = -1
+    #         startRow = 6
+    #         enemyColor = 'b'
+    #         kingRow, kingCol = self.whiteKingLocation
+    #     else:
+    #         moveAmount = 1
+    #         startRow = 1
+    #         enemyColor = 'w'
+    #         kingRow, kingCol = self.blackKingLocation
+    #     if self.board[r+moveAmount][c]=='--': #1 square move
+    #         if not piecePinned or pinDirection == (moveAmount,0):
+    #             moves.append(Move((r,c),(r+moveAmount,c),self.board))
+    #             if r == startRow and self.board[r+2*moveAmount][c] == '--': # 2 square moves
+    #                 moves.append(Move((r,c),(r+2*moveAmount, c),self.board))
+    #     if c - 1 >= 0: #capture to left
+    #         if not piecePinned or pinDirection == (moveAmount, -1):
+    #             if self.board[r+moveAmount][c-1][0] == enemyColor:
+    #                 moves.append(Move((r,c), (r+moveAmount,c-1),self.board))
+    #             if (r+moveAmount,c-1) == self.enpassantPossible:
+    #                 attackingPieces = blockingPiece = False
+    #                 if kingRow == r:
+    #                     if kingCol < c:#quân vua ở bên trái tốt
+    #                         insideRange = range(kingCol + 1, c)
+    #                         outsideRange = range(c+2, 8)
+    #                     else :# vua  bên phải tốt
+    #                         insideRange = range(kingCol - 1, c + 1 , -1)
+    #                         outsideRange = range(c-1, -1, -1)
+    #                     for i in insideRange:
+    #                         if self.board[r][i] != '--':
+    #                             blockingPiece = True
+    #                     for i in outsideRange:
+    #                         square = self.board[r][i]
+    #                         if square[0] == enemyColor and (square[1] == 'R' or square[1]=='Q'):
+    #                             attackingPieces = True
+    #                         elif square != '--':
+    #                             blockingPiece = True
+    #                 if not attackingPieces or blockingPiece:
+    #                     moves.append(Move((r,c),(r+moveAmount,c-1),self.board,isEnpassantMove=True))
+    #     if c+1 <=7 :#capture to right
+    #         if not piecePinned or pinDirection == (moveAmount, 1):
+    #             if self.board[r+moveAmount][c+1][0] == enemyColor:
+    #                 moves.append(Move((r,c),(r+moveAmount,c+1),self.board))
+    #             if (r+moveAmount,c+1) == self.enpassantPossible:
+    #                 moves.append(Move((r,c),(r+moveAmount,c+1),self.board, isEnpassantMove=True))
+
+
     def getPawnMoves(self, r, c, moves):
-        piecePinned = False
-        pinDirection = ()
-        for i in range(len(self.pins)-1,-1,-1):
-            if self.pins[i][0] == r and self.pins[i][1]==c:
-                piecePinned = True
-                pinDirection = (self.pins[i][2], self.pins[i][3])
-                self.pins.remove(self.pins[i])
-                break
-
-        if self.whiteToMove:
-            moveAmount = -1
-            startRow = 6
-            enemyColor = 'b'
-            kingRow, kingCol = self.whiteKingLocation
-        else:
-            moveAmount = 1
-            startRow = 1
-            enemyColor = 'w'
-            kingRow, kingCol = self.blackKingLocation
-        if self.board[r+moveAmount][c]=='--': #1 square move
-            if not piecePinned or pinDirection == (moveAmount,0):
-                moves.append(Move((r,c),(r+moveAmount,c),self.board))
-                if r == startRow and self.board[r+2*moveAmount][c] == '--': # 2 square moves
-                    moves.append(Move((r,c),(r+2*moveAmount, c),self.board))
-        if c - 1 >= 0: #capture to left
-            if not piecePinned or pinDirection == (moveAmount, -1):
-                if self.board[r+moveAmount][c-1][0] == enemyColor:
-                    moves.append(Move((r,c), (r+moveAmount,c-1),self.board))
-                if (r+moveAmount,c-1) == self.enpassantPossible:
-                    attackingPieces = blockingPiece = False
-                    if kingRow == r:
-                        if kingCol < c:#quân vua ở bên trái tốt
-                            insideRange = range(kingCol + 1, c)
-                            outsideRange = range(c+2, 8)
-                        else :# vua  bên phải tốt
-                            insideRange = range(kingCol - 1, c + 1 , -1)
-                            outsideRange = range(c-1, -1, -1)
-                        for i in insideRange:
-                            if self.board[r][i] != '--':
-                                blockingPiece = True
-                        for i in outsideRange:
-                            square = self.board[r][i]
-                            if square[0] == enemyColor and (square[1] == 'R' or square[1]=='Q'):
-                                attackingPieces = True
-                            elif square != '--':
-                                blockingPiece = True
-                    if not attackingPieces or blockingPiece:
-                        moves.append(Move((r,c),(r+moveAmount,c-1),self.board,isEnpassantMove=True))
-        if c+1 <=7 :#capture to right
-            if not piecePinned or pinDirection == (moveAmount, 1):
-                if self.board[r+moveAmount][c+1][0] == enemyColor:
-                    moves.append(Move((r,c),(r+moveAmount,c+1),self.board))
-                if (r+moveAmount,c+1) == self.enpassantPossible:
-                    moves.append(Move((r,c),(r+moveAmount,c+1),self.board, isEnpassantMove=True))
-
-
-    '''def getPawnMoves(self, r, c, moves):
         if self.whiteToMove:  # Tốt trắng di chuyển
             kingRow, kingCol = self.whiteKingLocation
             if self.board[r - 1][c] == '--':  # 1 ô phía trước trống?
@@ -287,7 +287,7 @@ class GameState():
                 if self.board[r + 1][c + 1][0] == 'w':
                     moves.append(Move((r, c), (r + 1, c + 1), self.board))
                 elif (r + 1, c + 1) == self.enpassantPossible:
-                    moves.append(Move((r, c), (r + 1, c + 1), self.board, isEnpassantMove=True))'''
+                    moves.append(Move((r, c), (r + 1, c + 1), self.board, isEnpassantMove=True))
 
     def getRookMoves(self, r, c, moves):
         directions = ((-1, 0), (0, -1), (1, 0), (0, 1))  # Lên, trái, xuống, phải
