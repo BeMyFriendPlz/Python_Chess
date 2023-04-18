@@ -76,43 +76,6 @@ def findRandomMove(validMoves):
     return validMoves[random.randint(0,len(validMoves)-1)]#các bước đi hợp lệ
 
 '''
-tìm nước đi tốt nhất, tối thiểu tối đa mà không cần duyệt
-'''
-def findBestMoveMinMaxNoRecursion(gs, validMoves):
-    turnMultiplier = 1 if gs.whiteToMove else -1
-    opponentMinMaxScore = CHECKMATE
-    bestPlayerMove = None
-    random.shuffle(validMoves)
-    for playerMove in validMoves:
-        gs.makeMoved(playerMove)
-        opponentsMoves = gs.getValidMoves()
-        if gs.stalemate:
-            opponentMaxScore = STALEMATE
-        elif gs.checkmate:
-            opponentMaxScore = -CHECKMATE
-        else:
-            opponentMaxScore = -CHECKMATE
-            for opponentsMoves in opponentsMoves:
-                gs.makeMoved(opponentsMoves)
-                gs.getValidMoves()
-                if gs.checkmate:
-                    score = CHECKMATE
-                elif gs.stalemate:
-                    score = STALEMATE
-                else:
-                    score = -turnMultiplier * scoreMaterial(gs.board)
-                if score > opponentMaxScore :
-                    opponentMaxScore = score
-                    #bestPlayerMove = playerMove
-                gs.undoMoved()
-        if opponentMaxScore < opponentMinMaxScore:
-            opponentMinMaxScore = opponentMaxScore
-            bestPlayerMove = playerMove
-        gs.undoMoved()
-    return bestPlayerMove
-
-
-'''
 Phương thức trợ giúp để thưc hiện lời gọi đệ quy đầu tiên
 '''
 def findBestMove(gs, validMoves, returnQueue):
