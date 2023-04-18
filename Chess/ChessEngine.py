@@ -257,7 +257,6 @@ class GameState():
 
     def getPawnMoves(self, r, c, moves):
         if self.whiteToMove:  # Tốt trắng di chuyển
-            kingRow, kingCol = self.whiteKingLocation
             if self.board[r - 1][c] == '--':  # 1 ô phía trước trống?
                 moves.append(Move((r, c), (r - 1, c), self.board))
                 if r == 6 and self.board[r - 2][c] == '--':  # 2 ô phía trước trống?
@@ -273,7 +272,6 @@ class GameState():
                 elif (r - 1, c + 1) == self.enpassantPossible:
                     moves.append(Move((r, c), (r - 1, c + 1), self.board, isEnpassantMove=True))
         else:  # Tốt đen di chuyển
-            kingRow, kingCol = self.blackKingLocation
             if self.board[r + 1][c] == '--':  # 1 ô phía trước trống?
                 moves.append(Move((r, c), (r + 1, c), self.board))
                 if r == 1 and self.board[r + 2][c] == '--':  # 2 ô phía trước trống?
@@ -377,8 +375,8 @@ class GameState():
 
 class CastleRights():
     def __init__(self, wks, bks, wqs, bqs):
-        self.wks = wks
-        self.bks = bks
+        self.wks = wks #white king side
+        self.bks = bks #black king side
         self.wqs = wqs
         self.bqs = bqs
 
