@@ -72,6 +72,7 @@ def drawMenu():
     About_button.draw(Screen)
     Exit_button.draw(Screen)
     if SinglePlayer_button.check_clicked():
+        
         return 1
     elif MultiPlayer_button.check_clicked():
         return 2

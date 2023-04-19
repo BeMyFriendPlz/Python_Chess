@@ -12,6 +12,16 @@ class GameState():
             ['wp', 'wp', 'wp', 'wp', 'wp', 'wp', 'wp', 'wp'],
             ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR'],
         ]
+        # self.board = [
+        #     ['--', '--', '--', '--', '--', '--', '--', '--'],
+        #     ['--', '--', '--', '--', '--', '--', '--', 'bK'],
+        #     ['--', '--', '--', '--', '--', '--', '--', '--'],
+        #     ['--', '--', '--', 'wp', '--', '--', '--', '--'],
+        #     ['--', '--', '--', '--', '--', '--', '--', '--'],
+        #     ['--', '--', '--', '--', '--', '--', '--', '--'],
+        #     ['--', '--', '--', '--', '--', '--', '--', '--'],
+        #     ['--', '--', '--', '--', 'wK', '--', '--', '--'],
+        # ]
         self.moveFunctions = {'p': self.getPawnMoves, 'R': self.getRookMoves, 'N': self.getKnightMoves,
                               'B': self.getBishopMoves, 'Q': self.getQueenMoves, 'K': self.getKingMoves}
         self.whiteToMove = True  # Trắng đi trước
@@ -46,7 +56,7 @@ class GameState():
         if move.isEnpassantMove:
             self.board[move.startRow][move.endCol] = '--'  # Bắt tốt
 
-        # Cập nhật nước đi tốt qua đường
+        # Cập nhật vị trí nước đi tốt qua đường
         if move.pieceMoved[1] == 'p' and abs(move.startRow - move.endRow) == 2:  # chỉ khi đi 2 bước
             self.enpassantPossible = ((move.startRow + move.endRow) // 2, move.startCol)
         else:

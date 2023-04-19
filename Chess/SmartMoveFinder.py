@@ -141,7 +141,7 @@ def findMoveNegaMax(gs, validMoves, depth, turnMultiplier):
 def findMoveNegaMaxAlphaBeta(gs, validMoves, depth, alpha, beta, turnMultiplier):
     global nextMove, counter
     counter += 1
-    if depth ==0:
+    if depth == 0:
         return turnMultiplier * scoreBoard(gs)
 
     #sắp xếp thứ tự di chuyển - thực hiện sau
